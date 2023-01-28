@@ -1,10 +1,12 @@
 ## GDD
 Any words spelt AS_THIS_IS are placeholders to be determined later.
 
+This is a pong clone.
+
 ## Basic Elements
 There should be a main menu screen, with a start and exit button.
 
-Start should begin the gameplay state.  
+Start should begin the gameplay state.      
 Exit should exit the program (or whatever if it's on a website.)
 
 ## Gameplay elements
