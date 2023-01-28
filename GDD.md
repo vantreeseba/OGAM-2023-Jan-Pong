@@ -50,3 +50,29 @@ The game ends when a single player scores WIN_AMOUNT goals.
 #### UI Elements
 ----
 At the top of the screen, it should show the current goal amounts, and the current length of the game in seconds?
+
+## Art/UI/Music/SFX
+#### UI
+----
+The main menu icons, buttons and misc can use kenney assets.
+The score text can use a default font.
+
+#### Meshes
+----
+Required meshse are nill, as I can just use built in unity cubes and etc.
+
+#### Textures
+----
+I can use kenney prototype textures for now, and see if that looks good enough.
+
+#### Music
+----
+The main menu should have some theme.
+The gameplay state should have some different theme(s).
+
+#### Ball
+----
+On contact with paddle, should play some BALL_PADDLE_SFX.
+On contact with wall, should play some BALL_WALL_SFX.
+On contact with goal, should play some BALL_GOAL_SFX.
+On inital start, should play some BALL_START_SFX.
