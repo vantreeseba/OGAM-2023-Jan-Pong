@@ -10,6 +10,7 @@ public class Ball : MonoBehaviour {
 
   private Rigidbody _rigidbody;
   private PlayerControls _controls;
+  private float _radius = 0.5f;
 
   // Setup a public event, so other game systems can know when the ball
   // has hit the left or right side of the screen.
@@ -28,23 +29,21 @@ public class Ball : MonoBehaviour {
 
   void OnEnable() => _controls.Gameplay.Restart.performed += OnRestart;
   void OnDisable() => _controls.Gameplay.Restart.performed -= OnRestart;
-  private void OnRestart(InputAction.CallbackContext ctx) => StartCoroutine(ResetBall());
+  void OnRestart(InputAction.CallbackContext ctx) => StartCoroutine(ResetBall());
 
+  // Because the ball is physics based, we use FixedUpdate instead of update.
+  // This "updates" when the physics system updates, instead of as often as possible.
   void FixedUpdate() {
-    var radius = 0.5f;
     var position = transform.position;
-
-    var hitTopOfScreen = position.y + radius > GameState.screenSize.y;
-    var hitBottomOfScreen = position.y - radius < -GameState.screenSize.y;
+    var hitTopOfScreen = position.y + _radius > GameState.screenSize.y;
+    var hitBottomOfScreen = position.y - _radius < -GameState.screenSize.y;
+    var hitLeftSideOfScreen = position.x - _radius < -GameState.screenSize.x;
+    var hitRightSideOfScreen = position.x + _radius > GameState.screenSize.x;
 
     if (hitTopOfScreen || hitBottomOfScreen) {
       // invert the y velocity, to make it "bounce".
       _rigidbody.velocity = _rigidbody.velocity.ScaleY(-1);
     }
-
-    var hitLeftSideOfScreen = position.x - radius < -GameState.screenSize.x;
-    var hitRightSideOfScreen = position.x + radius > GameState.screenSize.x;
-
     if (hitLeftSideOfScreen || hitRightSideOfScreen) {
       // trigger ball entering goal event.
       OnBallEnterGoal?.Invoke(hitLeftSideOfScreen);
@@ -64,16 +63,16 @@ public class Ball : MonoBehaviour {
     var normalizedPaddleSize = 1f / paddleSize;
 
     // Get the vector pointing from the center of the paddle to the point where it was hit by the ball.
-    var newVel = (contact.point - contact.otherCollider.bounds.center);
+    var newVelocity = contact.point - contact.otherCollider.bounds.center;
 
     // Scale the y part of the new velocity so that hitting the edge of the paddle makes it go faster
     // in the vertical direction.
     // The more towards the center it is, the more it reduces the y part of the velocity.
-    newVel = newVel.ScaleY(normalizedPaddleSize);
+    newVelocity = newVelocity.ScaleY(normalizedPaddleSize);
 
     // Normalize the velocity so it's a unit vector (a vector with length 1).
     // Multiply that by the move speed to set the new velocity.
-    _rigidbody.velocity = newVel.normalized * moveSpeed;
+    _rigidbody.velocity = newVelocity.normalized * moveSpeed;
   }
 
   IEnumerator ResetBall() {

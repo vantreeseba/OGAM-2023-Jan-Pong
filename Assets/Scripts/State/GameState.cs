@@ -6,24 +6,23 @@ public class GameState : Singleton {
   public static int playerOneScore { get; private set; }
   public static int playerTwoScore { get; private set; }
 
-  void OnEnable() {
-    GameObject.DontDestroyOnLoad(this);
-    var controls = new PlayerControls();
-    controls.Enable();
-    controls.Gameplay.Enable();
+  private PlayerControls _controls;
 
-    controls.Gameplay.Exit.performed += _ => ExitGame();
+  void Awake() {
+    GameObject.DontDestroyOnLoad(this);
+    _controls = new PlayerControls();
+    _controls.Enable();
+    _controls.Gameplay.Enable();
+
+    _controls.Gameplay.Exit.performed += _ => ExitGame();
 
     var size = Screen.safeArea.size;
     var cam = Camera.main;
     screenSize = cam.ScreenToWorldPoint(new Vector3(size.x, size.y, -cam.transform.position.z));
-
-    Ball.OnBallEnterGoal += UpdateScore;
   }
 
-  void OnDisable() {
-    Ball.OnBallEnterGoal -= UpdateScore;
-  }
+  void OnEnable() => Ball.OnBallEnterGoal += UpdateScore;
+  void OnDisable() => Ball.OnBallEnterGoal -= UpdateScore;
 
   void UpdateScore(bool enteredLeftGoal) {
     var playerOneScoreText = GameObject.Find("Player 1 Score").GetComponent<TMPro.TMP_Text>();

@@ -2,28 +2,20 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Paddle : MonoBehaviour {
+public class AIPaddle : MonoBehaviour {
   public float movementSpeed = 1;
   public float width = 1;
 
-  private PlayerControls _controls;
   private float _movement;
+  private GameObject _ball;
 
   void Awake() {
-    // Create player controls here, since it's a scriptable object 
-    // you cannot initialize it above.
-    _controls = new PlayerControls();
-    // Enable all controls 
-    _controls.Enable();
-    // and the action map.
-    _controls.Gameplay.Enable();
+    _ball = GameObject.Find("Ball");
   }
 
-  void OnEnable() => _controls.Gameplay.Move.performed += OnMove;
-  void OnDisable() => _controls.Gameplay.Move.performed -= OnMove;
-  void OnMove(InputAction.CallbackContext ctx) => _movement = ctx.ReadValue<float>();
-
   void Update() {
+    _movement = _ball.transform.position.y - transform.position.y;
+
     // Move the paddle based on the current input value.
     transform.position += movementSpeed * Time.deltaTime * Vector3.zero.SetY(_movement);
     var position = transform.position;
